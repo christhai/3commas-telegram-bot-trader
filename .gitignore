@@ -1,0 +1,41 @@
+#  Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# Ansible files
+**/.fact/*
+*.retry
+ansible/roles/external
+ansible/collections
+
+# Python
+.venv
+__pycache__/
+.mypy_cache/
+*.py[cod]
+config.py
+*session
+# AutoEnv
+.env
+.env.leave
+
+# DirEnv, like AutoEnv but better
+.direnv/
+.envrc
+
+# IDE
+.idea/
+.vscode
+.notes
+temp/
+*.swp
+
+# Config
+.ssh
+
+# MAC
+*.DS_STORE
+workspace.code-workspace

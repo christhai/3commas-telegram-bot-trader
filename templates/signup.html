@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <main class="container signup-section">
+    <div class="section-content">
+      <h2>Link your account</h2>
+
+      <form method="POST" action="/signup">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+          {{ form.tele_id.label }}
+
+          {% if form.tele_id.errors %}
+            {% for error in form.tele_id.errors %}
+              <p class="error-message">{{ error }}</p>
+            {% endfor %}
+          {% endif %}
+
+          {{ form.tele_id }}
+        </div>
+
+        <div class="form-group">
+          {{ form.tele_hash.label }}
+
+          {% if form.tele_hash.errors %}
+            {% for error in form.tele_hash.errors %}
+              <p class="error-message">{{ error }}</p>
+            {% endfor %}
+          {% endif %}
+
+          {{ form.tele_hash }}
+        </div>
+
+        <div class="form-group">
+          {{ form.tele_channel.label }}
+
+          {% if form.tele_channel.errors %}
+            {% for error in form.tele_channel.errors %}
+              <p class="error-message">{{ error }}</p>
+            {% endfor %}
+          {% endif %}
+
+          {{ form.tele_channel }}
+        </div>
+
+        <div class="form-group">
+          {{ form.accountid.label }}
+
+          {% if form.accountid.errors %}
+            {% for error in form.accountid.errors %}
+              <p class="error-message">{{ error }}</p>
+            {% endfor %}
+          {% endif %}
+
+          {{ form.accountid }}
+        </div>
+
+        <div class="form-group">
+          {{ form.accountkey.label }}
+
+          {% if form.accountkey.errors %}
+            {% for error in form.accountkey.errors %}
+              <p class="error-message">{{ error }}</p>
+            {% endfor %}
+          {% endif %}
+
+          {{ form.accountkey }}
+        </div>
+
+        <div class="form-group">
+          {{ form.accountsecret.label }}
+
+          {% if form.accountsecret.errors %}
+            {% for error in form.accountsecret.errors %}
+              <p class="error-message">{{ error }}</p>
+            {% endfor %}
+          {% endif %}
+
+          {{ form.accountsecret }}
+        </div>
+
+        {{ form.submit(class="btn-primary") }}
+      </form>
+    </div>
+  </main>
+{% endblock %}
