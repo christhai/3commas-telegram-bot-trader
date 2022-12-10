@@ -19,16 +19,17 @@ pipeline {
         }
       }
     }
-    stage('Deploy Image') {
-      steps{
-        script {
-          docker.withRegistry( 'http://10.0.0.87:8081', registryCredential ) {
-            dockerImage.push("$BUILD_NUMBER")
-             dockerImage.push('latest')
-          }
-        }
+    stage ('Push image to Artifactory') { // take that image and push to artifactory
+      steps {
+          rtDockerPush(
+              serverId: "jfrog-platform",
+              image: "10.0.0.87:8081/docker-local/nginx:latest",
+              host: 'http://10.0.0.87:8081',
+              targetRepo: 'docker-local', 
+              properties: 'status=stable'
+          )
       }
-    }
+  }
     stage('Remove Unused docker image') {
       steps{
         sh "docker rmi $imagename:$BUILD_NUMBER"
