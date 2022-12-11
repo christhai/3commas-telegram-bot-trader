@@ -21,7 +21,7 @@ pipeline {
     }
     stage('Push docker registry latest') {
       steps {
-        container('builder') {
+        script {
           withCredentials(
             [usernamePassword(
               credentialsId: 'docker-registry-credentials',
