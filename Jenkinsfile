@@ -24,7 +24,7 @@ pipeline {
     stage('Building and Pushing image') {
       steps{
         script {
-          docker.withRegistry('http://$artifactory', 'docker-registry-credentials') {
+          docker.withRegistry('http://10.0.0.87:8081', 'docker-registry-credentials') {
             docker.build('nginx').push('latest')
           }
         }
