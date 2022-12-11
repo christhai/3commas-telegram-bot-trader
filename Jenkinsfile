@@ -19,15 +19,29 @@ pipeline {
         }
       }
     }
-    stage ('Pull image to local') { // take that image and push to artifactory
+    stage('Push docker registry latest') {
       steps {
-          rtDockerPull(
-              serverId: "jfrog-platform",
-              image: "10.0.0.87:8081/docker-local/nginx:latest",
-              sourceRepo: 'docker-local'
-          )
+        container('builder') {
+          withCredentials(
+            [usernamePassword(
+              credentialsId: 'docker-registry-credentials',
+              passwordVariable: 'DOCKER_PASSWORD',
+              usernameVariable: 'DOCKER_LOGIN')]
+          ){
+            echo 'Docker Login to Talend registry'
+            sh '''
+              #! /bin/bash
+              set +x
+              echo $DOCKER_PASSWORD | docker login http://10.0.0.87:8081 -u $DOCKER_LOGIN --password-stdin
+            '''
+          }
+          sh 'docker tag nginx  10.0.0.87:8081/docker-local/nginx:latest'
+          retry(3) {
+            sh 'docker push 10.0.0.87:8081/docker-local/nginx'
+          }
+        }
       }
-  }
+    }
     stage ('Push image to Artifactory') { // take that image and push to artifactory
       steps {
           rtDockerPush(
