@@ -19,12 +19,20 @@ pipeline {
         }
       }
     }
+    stage ('Pull image to local') { // take that image and push to artifactory
+      steps {
+          rtDockerPull(
+              serverId: "jfrog-platform",
+              image: "10.0.0.87:8081/docker-local/nginx:latest",
+              sourceRepo: 'docker-local'
+          )
+      }
+  }
     stage ('Push image to Artifactory') { // take that image and push to artifactory
       steps {
           rtDockerPush(
               serverId: "jfrog-platform",
               image: "10.0.0.87:8081/docker-local/nginx:latest",
-              host: 'http://10.0.0.87:8081',
               targetRepo: 'docker-local', 
               properties: 'status=stable'
           )
