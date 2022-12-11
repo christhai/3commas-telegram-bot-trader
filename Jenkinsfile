@@ -3,6 +3,7 @@ pipeline {
     imagename = "christhai/telegram-bot"
     registryCredential = 'jenkins'
     dockerImage = ''
+    artifactory = '10.0.0.87:8081'
   }
   agent any
   stages {
@@ -19,6 +20,18 @@ pipeline {
         }
       }
     }
+    
+    stage('Building and Pushing image') {
+      steps{
+        script {
+          docker.withRegistry('http://$artifactory', 'docker-registry-credentials') {
+            docker.build('nginx').push('latest')
+          }
+        }
+      }
+    }
+
+    
     stage('Push docker registry latest') {
       steps {
         script {
@@ -32,12 +45,12 @@ pipeline {
             sh '''
               #! /bin/bash
               set +x
-              echo $DOCKER_PASSWORD | docker login http://10.0.0.87:8081 -u $DOCKER_LOGIN --password-stdin
+              echo $DOCKER_PASSWORD | docker login http://$artifactory -u $DOCKER_LOGIN --password-stdin
             '''
           }
-          sh 'docker tag $imagename  10.0.0.87:8081/docker-local/$imagename:latest'
+          sh 'docker tag $imagename  $artifactory/docker-local/$imagename:latest'
           retry(3) {
-            sh 'docker push 10.0.0.87:8081/docker-local/$imagename:latest'
+            sh 'docker push $artifactory/docker-local/$imagename:latest'
           }
         }
       }
