@@ -35,26 +35,15 @@ pipeline {
               echo $DOCKER_PASSWORD | docker login http://10.0.0.87:8081 -u $DOCKER_LOGIN --password-stdin
             '''
           }
-          sh 'docker tag nginx  10.0.0.87:8081/docker-local/nginx:latest'
+          sh 'docker tag $imagename  10.0.0.87:8081/docker-local/$imagename:latest'
           retry(3) {
-            sh 'docker push 10.0.0.87:8081/docker-local/nginx'
+            sh 'docker push 10.0.0.87:8081/docker-local/$imagename:latest'
           }
         }
       }
     }
-    stage ('Push image to Artifactory') { // take that image and push to artifactory
-      steps {
-          rtDockerPush(
-              serverId: "jfrog-platform",
-              image: "10.0.0.87:8081/docker-local/nginx:latest",
-              targetRepo: 'docker-local', 
-              properties: 'status=stable'
-          )
-      }
-  }
     stage('Remove Unused docker image') {
       steps{
-        sh "docker rmi $imagename:$BUILD_NUMBER"
          sh "docker rmi $imagename:latest"
  
       }
