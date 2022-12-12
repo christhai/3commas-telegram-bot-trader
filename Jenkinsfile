@@ -25,12 +25,11 @@ pipeline {
       steps{
         script {
           docker.withRegistry('http://10.0.0.87:8081', 'docker-registry-credentials') {
-            docker.build('nginx').push('latest')
+            docker.build('docker-local/${env.dockerImage}').push('latest')
           }
         }
       }
     }
-
     
     stage('Push docker registry latest') {
       steps {
@@ -45,12 +44,12 @@ pipeline {
             sh '''
               #! /bin/bash
               set +x
-              echo $DOCKER_PASSWORD | docker login http://$artifactory -u $DOCKER_LOGIN --password-stdin
+              echo $DOCKER_PASSWORD | docker login http://${env.artifactory} -u $DOCKER_LOGIN --password-stdin
             '''
           }
-          sh 'docker tag $imagename  $artifactory/docker-local/$imagename:latest'
+          sh 'docker tag $imagename  ${env.artifactory}/docker-local/${env.imagename}:latest'
           retry(3) {
-            sh 'docker push $artifactory/docker-local/$imagename:latest'
+            sh 'docker push ${env.artifactory}/docker-local/$imagename:latest'
           }
         }
       }
