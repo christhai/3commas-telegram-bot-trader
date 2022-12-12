@@ -1,6 +1,6 @@
 pipeline {
   environment {
-    imagename = "christhai/telegram-bot"
+    imagename = "docker-local/christhai/telegram-bot"
     registryCredential = 'jenkins'
     dockerImage = ''
     artifactory = '10.0.0.87:8081'
@@ -21,11 +21,11 @@ pipeline {
       }
     }
     
-    stage('Building and Pushing image') {
+    stage('Pushing image') {
       steps{
         script {
           docker.withRegistry('http://10.0.0.87:8081', 'docker-registry-credentials') {
-            docker.build('docker-local/${env.dockerImage}').push('latest')
+            dockerImage.push('latest')
           }
         }
       }
