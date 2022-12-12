@@ -44,12 +44,12 @@ pipeline {
             sh '''
               #! /bin/bash
               set +x
-              echo $DOCKER_PASSWORD | docker login http://${env.artifactory} -u $DOCKER_LOGIN --password-stdin
+              echo $DOCKER_PASSWORD | docker login http://${artifactory} -u $DOCKER_LOGIN --password-stdin
             '''
           }
-          sh 'docker tag $imagename  ${env.artifactory}/docker-local/${env.imagename}:latest'
+          sh 'docker tag $imagename  ${artifactory}/${imagename}:latest'
           retry(3) {
-            sh 'docker push ${env.artifactory}/docker-local/$imagename:latest'
+            sh 'docker push ${artifactory}/$imagename:latest'
           }
         }
       }
