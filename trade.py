@@ -9,7 +9,19 @@ from tradingview_ta import TA_Handler, Interval, Exchange
 from py3cw.request import Py3CW
 import time
 import sys
+import logging
 
+
+logger=logging.getLogger()
+
+formate = json.dumps({
+"@timestamp": "%(asctime)s",
+"level": "%(levelname)s",
+"message": "%(message)s",
+})
+
+logging.basicConfig(level=logging.INFO,
+      format=formate)
 
 
 def main(arg1, arg2, arg3, arg4, arg5, arg6):
@@ -19,7 +31,7 @@ def main(arg1, arg2, arg3, arg4, arg5, arg6):
     commas_account_id = arg4
     commas_account_key = arg5
     commas_account_secret = arg6
-    print(api_id, api_hash, tele_channel, commas_account_id)
+    # print(api_id, api_hash, tele_channel, commas_account_id)
     sum_cost = 100  #  spent for each trade
     tp = 1.1  #  target_profit 
     sl = 0.9  # stop_loss
@@ -39,7 +51,7 @@ def main(arg1, arg2, arg3, arg4, arg5, arg6):
     # Trade 
 
     def commas_new_trade(pair,units,limit_price,sl_price,tp_price):
-        print("start new trade")
+        logger.info("start new trade")
         error, data  = p3cw.request(
             entity='smart_trades_v2', 
             action='new', 
@@ -81,26 +93,22 @@ def main(arg1, arg2, arg3, arg4, arg5, arg6):
                 }
             }
         )
-        print(error,data)
-        msg = pair + " start new trade"
-
-
-
+        logger.info(f"{data}")
+        msg = f"{pair} has placed new order"
+        logger.info(f"{msg}")
 
     @client.on(events.NewMessage(chats=tele_channel))
     async def my_event_handler(event):
         sub_str = re.sub(u"([^\u0030-\u0039\u0041-\u005a\u0061-\u007a])"," ",event.text)
-        #print(sub_str)
         out  = sub_str.split()
-        #print(out)
-
         if 'New' in out and 'signal' in out:
           if out[0] == "Futures" or out[0] == "Spot":
             if 'USDT' in out[1]:
                 symbol = out[1]
             else: 
                 symbol = out[1]+'USDT'  
-            print(symbol,"is in BUY ZONE")
+            logger.info(f"{symbol} is in BUY ZONE")
+
             ta = TA_Handler(
                 symbol=symbol,
                 screener="crypto",
@@ -113,7 +121,7 @@ def main(arg1, arg2, arg3, arg4, arg5, arg6):
             tp_price = limit_price * tp
 
             amount = float(sum_cost / limit_price)
-            print("Amount is ", amount)
+            logger.info(f"Amount is {amount}")
             pair = 'USDT_' + symbol[:-4]
             #start new trade
             commas_new_trade(pair,amount,limit_price,sl_price,tp_price)
